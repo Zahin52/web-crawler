@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel=" stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" />
+    <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@0.2/dist/pretty-print-json.css> <script
+        src="https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/pretty-print-json@0.2.2/dist/pretty-print-json.min.js"></script>
+</head>
+
+
+<body id="bbd" class="">
+    <style>
+        .modal-body {
+            overflow-y: scroll;
+        }
+
+        .modal-body span {
+            font-weight: 700;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .full_modal-dialog {
+            width: 98% !important;
+            height: 92% !important;
+            min-width: 98% !important;
+            min-height: 92% !important;
+            max-width: 98% !important;
+            max-height: 92% !important;
+            padding: 0 !important;
+        }
+
+        .full_modal-content {
+            height: 99% !important;
+            min-height: 99% !important;
+            max-height: 99% !important;
+        }
+
+
+
+
+        .del_overlay::before {
+            content: "\f00d" !important;
+            font-family: FontAwesome !important;
+            /* content: "\f00d"; */
+            position: absolute;
+            display: block;
+            top: -24px;
+            right: 2px;
+            width: 1.2rem;
+            z-index: 7;
+            height: 1.2rem;
+            cursor: pointer;
+            /* pointer-events:auto; */
+
+        }
+    </style>
+
+    <div class="container border rounded mx-auto d-flex justify-content-between my-4 py-4">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Scrapping_inputModal">
+            Launch input Modal
+        </button>
+        <button type="button" class="btn btn-primary" onclick="import_json()">
+            Export As Json
+        </button>
+
+        <button type="button" class="btn btn-primary">
+            Export As CSV
+        </button>
+
+    </div>
+    <div class="d-flex justify-content-center flex-wrap">
+        <div>
+            <button id="detail_trigger" type="button" class="btn btn-primary mx-2">
+                Detail Json
+            </button>
+        </div>
+        <div>
+            <button id="simple_trigger" type="button" class="btn btn-primary mx-2">
+                Simple JSon
+            </button>
+        </div>
+    </div>
+    <pre class="container border rounded my-5 mx-auto" style="height: 9rem;" id="output">
+
+
+    </pre>
+    <pre class="container border rounded my-5 mx-auto" style="height: 9rem;" id="simple_json_output">
+
+
+    </pre>
+
+    <!-- Modal -->
+    <div class="modal fade " id="Scrapping_inputModal" tabindex="-1" role="dialog"
+        aria-labelledby="Scrapping_inputModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered  full_modal-dialog" role="document">
+            <div class="modal-content full_modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Give Scrapping data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="input_fields" class="">
+
+                        <div><span>URL</span>
+                            <div><input required id="url" class="form-control" type="text"></div>
+                        </div>
+                        <div><span>Root parent</span>
+                            <div><input id="Root_parent" required class="form-control" type="text"></div>
+                        </div>
+                        <fieldset id="input_field" style="padding: 8px;border:1px solid #d3d3d3;">
+                            <legend style="width: max-content;padding: 5px;;">Get data</legend>
+                            <div><span> Set Data-Title</span>
+                                <div><input id="data_title" required class="form-control" type="text"></div>
+                            </div>
+                            <!-- <div><span>Give BlockRoot</span>
+                                <div><input  required class="form-control" type="text"></div>
+                            </div> -->
+                            <div><span>Give ItemRoot</span>
+                                <div><input id="itemRoot" required class="form-control" type="text"></div>
+                            </div>
+                            <div class="attribute_input"><span>(Name : Class/id : attribute : output tag)</span>
+                                <div style="position: relative;">
+                                    <span class="del_overlay"></span>
+                                    <input required class="form-control input_class "
+                                        placeholder="image:.product-image-photo:src:img" type="text"></div>
+                            </div>
+                            <!-- <div><span>(Name : Class/id : attribute : output tag)</span>
+                                <div><input required class="form-control input_class" placeholder="name:.product-item-link:text:h3" type="text"></div>
+                            </div> -->
+                            <!-- <div><span>(Name : Class/id : attribute : output tag)</span>
+                                <div><input class="form-control input_class" value="name:.product-image-photo:src:img" type="text"></div>
+                            </div> -->
+                        </fieldset>
+                    </div>
+                    <div class="loading  w-100 h-100 d-none">
+                        <div class="d-flex justify-content-center">
+                            <img class="img-fluid"
+                                src="https://i.pinimg.com/originals/90/80/60/9080607321ab98fa3e70dd24b2513a20.gif"
+                                alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add_item">Add item</button>
+                    <button type="button" class="btn btn-primary" onclick="get_json()">Get json</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <!-- <script type="application/json" src="jquery.ajax-cross-origin.min.js"></script> -->
+
+    <script>
+        $("#simple_json_output").hide();
+        $("#detail_trigger").click(function () {
+            // alert("detail");
+            $("#output").show();
+            $("#simple_json_output").hide();
+
+        });
+        $("#simple_trigger").click(function () {
+            // alert("normal");
+            $("#simple_json_output").show();
+            $("#output").hide();
+
+        });
+        $(".del_overlay").click(function (e) {
+            alert("not before");
+            del_me(e);
+        });
+
+        $("#add_item").click(function () {
+            var div = $("<div>").attr("class", "attribute_input").append(`
+                <span>(Name : Class/id : attribute : output tag)</span>
+                                <div style="position: relative;">
+                                    <span class="del_overlay" ></span>
+                                    <input required  class="form-control input_class "
+                                        placeholder="image:.product-image-photo:src:img" type="text"></div>
+            `).appendTo("#input_field");
+            $(".del_overlay").click(function (e) {
+                del_me(e);
+            });
+        });
+
+        function del_me(e) {
+            console.log(e.target);
+            $(e.target).closest('.attribute_input').remove();
+        }
+
+
+        var json_string = '';
+        var ajax_call = async function (Src_url) {
+
+            console.log("input", $(".input_class").val().split(':'));
+            $(".loading").removeClass('d-block');
+            $(".loading").addClass('d-block');
+            $("#input_fields").addClass('d-none');
+
+
+
+
+            $.ajax({
+
+
+                url: "get_html.php",
+                data: {
+                    link: Src_url
+                },
+
+                success: async function (data) {
+                    console.log($(data));
+                    $('#Scrapping_inputModal').modal('hide');
+
+                    var Data_name = $("#data_title").val();
+                    var element = data;
+
+                    // var el = await $('<div>').attr({
+                    //     "id": "hidden_div",
+                    //     "style": "width:500px;height:600px;overflow-y:scroll;opacity:0;pointer-events: none;"
+                    // }).html(data).appendTo("#bbd");
+
+
+                    var path = $("#Root_parent").val() + " " + $("#itemRoot").val();
+                    var total = $(element).find(path);
+                    console.log(total);
+                    // var total = $(document).find(path);
+                    // var Photo = $(total).find(".product-image-photo");
+                    // var name = $(total).find(".product-item-link");
+                    var json = {
+                        "url": Src_url,
+                        "Data_name": Data_name,
+                        "items": [
+
+                        ]
+                    };
+                    var simple_json = [];
+
+                    // console.log($(document).find(
+                    //     ".e2990a195522ee7eac8ea1e4a27c0370  .product-item"));
+                    // console.log("Photo", Photo);
+                    // console.log("name", name);
+                    // console.log("text",document.querySelector("#product-container"));
+                    //console.log("ecal",$(document).find("#__next > div > div.layouts___StyledDiv-sc-6pqol9-0.iUcKaB > div:nth-child(5) > div > div:nth-child(2) > span > div > div.HomeProduct__GridCategory-sc-1gbcb1w-0.QEcnt.my-4 > a"));
+                    // console.log("Photo", Photo);
+                    // console.log("name", name);
+
+                    $(total).each(function (index, value) {
+
+                        var inp = $(".input_class");
+
+                        var item = $(this);
+                        // var item=$(item);
+                        // console.log($(this)[0].outerHTML);
+                        // console.log($(this));
+
+                        var main_object = [];
+                        var simple_json_obj = {};
+                        
+
+                        $(inp).each(function (index, value) {
+
+                            var datas = $(this).val().split(':');
+
+                            var sub_object = {};
+                            if (datas[2] === 'src') {
+                                var dataUrl = '';
+                                function getDataUrl(img) {
+                                    let p = new Promise(function (resolve, reject) {                                        const canvas = document
+                                                .createElement(
+                                                    'canvas');
+                                            const ctx = canvas
+                                                .getContext('2d');
+                                            // Set width and height
+                                            canvas.width = img
+                                            .width;
+                                            canvas.height = img
+                                                .height;
+                                            // Draw the image
+                                            ctx.drawImage(img, 0,
+                                            0);
+                                            // return canvas.toDataURL(
+                                            //     'image/jpeg');
+
+                                        resolve(canvas.toDataURL('image/jpeg'))
+
+                                    })
+                                    return p;
+                                }
+                                // function getDataUrl(img) {
+                                //     // Create canvas
+                                //     const canvas = document.createElement('canvas');
+                                //     const ctx = canvas.getContext('2d');
+                                //     // Set width and height
+                                //     canvas.width = img.width;
+                                //     canvas.height = img.height;
+                                //     // Draw the image
+                                //     ctx.drawImage(img, 0, 0);
+                                //     return canvas.toDataURL('image/jpeg');
+                                // }
+                                var img = item.find(`${datas[1]}`)[0];
+                                img.setAttribute('crossorigin', 'anonymous');
+                                img.addEventListener('load', async function (
+                                    event) {
+                                    dataUrl = await getDataUrl(event.currentTarget);
+                                    simple_json_obj[datas[0]] = dataUrl;
+
+                                    var blob = convertDataURIToBinaryFetch(dataUrl);
+                                    function convertDataURIToBinaryFetch(dataURI) {
+                                        return fetch(dataURI)
+                                            .then((res) => res.blob());
+                                        }
+                                    console.log("data", dataUrl);
+
+                                    //    var  file = new Blob([dataUrl], {type:"text/plain"});
+
+                                    // var url  = window.URL.createObjectURL(file);
+                                   
+                                });
+                                // Select the image
+                                // const img = item.find(`${datas[1]}`)[0].outerHTML;
+                                // console.log($(img)[0]);
+                                // console.log(item.find(`${datas[1]}`));
+
+                                // const dataUrl = getDataUrl($(img)[0]);
+                                // console.log(dataUrl);
+                                sub_object[datas[0]] =dataUrl; 
+
+                               
+
+
+
+                            } else {
+                                sub_object[datas[0]] = item.find(`${datas[1]}`)
+                                    .prop(
+                                        `${datas[2]}`) || '';
+
+                                simple_json_obj[datas[0]] = item.find(`${datas[1]}`)
+                                    .prop(
+                                        `${datas[2]}`) || '';
+                                console.log(item.find(`${datas[1]}`)
+                                    .prop(
+                                        `${datas[2]}`));
+                            }
+
+                            sub_object["tag"] = `${datas[3]}`;
+                            main_object.push(sub_object);
+                        });
+                        json.items.push(
+                            main_object
+                            // "img":$(Photo[index]).prop('src'),
+                            // "name":$(name[index]).prop('text')
+                        );
+                        simple_json.push(simple_json_obj);
+                    });
+
+                    console.log("simple_json", simple_json);
+                    console.log("json", JSON.stringify(json));
+                    // json_string = JSON.stringify(json);
+                    $("#output").text('');
+                    $("#simple_json_output").text('');
+                    // $("#output").css('height', 'auto').append(json_string);
+
+                    $("#simple_json_output").css('height', 'auto').html(prettyPrintJson.toHtml(
+                        simple_json));
+                        // $("#simple_json_output").css('height', 'auto').append(JSON.stringify(simple_json));
+                    $("#output").css('height', 'auto').html(prettyPrintJson.toHtml(json));
+
+                    // $("#hidden_div").remove();
+
+
+
+                },
+                complete: async function () {
+                    $(".loading").removeClass('d-block');
+                    $(".loading").addClass('d-none');
+                    $("#input_fields").removeClass('d-none');
+
+
+                }
+
+            });
+        }
+        var get_json = async function () {
+            var inpObj = $("input");
+            var bool = 1;
+            $(inpObj).each(function (index, value) {
+
+                if ($(this).val().length > 0) {
+                    bool = bool * 1;
+
+                } else {
+                    bool = bool * 0;
+                    // alert(index);
+                }
+            });
+            if (!bool) {
+                alert("Required field is empty");
+            } else {
+                var url = $("#url").val()
+                ajax_call(url);
+
+            }
+        };
+
+        var import_json = function () {
+            // Create a blob of the data
+            var fileToSave = new Blob([json_string], {
+                type: "text/json;charset=" + document.characterSet
+
+            });
+
+            // Save the file
+            saveAs(fileToSave, 'myData.json');
+        }
+    </script>
+
+</body>
+
+</html>
